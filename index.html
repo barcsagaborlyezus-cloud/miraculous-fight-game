@@ -3,1176 +3,986 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Miraculous Clash - Fighting Game</title>
+  <title>Miraculous Clash</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; }
     html, body {
+      margin: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0d0e14 100%);
-      font-family: 'Arial', sans-serif;
+      background: #0a1020;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
       color: white;
-      overflow: hidden;
     }
-
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
     }
 
-    .game-container {
+    .game-shell {
       position: relative;
-      width: 95vw;
-      max-width: 1400px;
-      height: 90vh;
-      max-height: 800px;
-      background: linear-gradient(180deg, #1a2847 0%, #0f1419 50%, #0a0c10 100%);
-      border: 3px solid #4a90e2;
-      border-radius: 12px;
-      box-shadow: 0 0 50px rgba(74, 144, 226, 0.3), inset 0 0 60px rgba(0, 0, 0, 0.8);
+      width: min(96vw, 1280px);
+      height: min(92vh, 820px);
+      border-radius: 18px;
       overflow: hidden;
-    }
-
-    /* Background */
-    .background {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
+      border: 2px solid rgba(255,255,255,0.18);
+      background: linear-gradient(180deg, #0f1d33 0%, #0b1729 20%, #0b0d12 100%);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45), inset 0 0 40px rgba(0,0,0,0.25);
     }
 
     .sky {
       position: absolute;
-      top: 0;
-      width: 100%;
-      height: 40%;
-      background: linear-gradient(180deg, #2d5a8c 0%, #1a3a5c 50%, #0d1f3c 100%);
+      inset: 0 0 25% 0;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(161,201,255,0.22), transparent 18%),
+        radial-gradient(circle at 75% 8%, rgba(255,255,255,0.18), transparent 12%),
+        linear-gradient(180deg, #203d60 0%, #1d2f4e 30%, #13233c 64%, #0f1727 100%);
     }
 
-    .city-silhouette {
+    .moon {
       position: absolute;
-      bottom: 25%;
-      width: 100%;
-      height: 30%;
-      opacity: 0.4;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 300"><defs><linearGradient id="cityGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:rgba(0,0,0,0);stop-opacity:1" /><stop offset="100%" style="stop-color:rgba(0,0,0,0.8);stop-opacity:1" /></linearGradient></defs><rect fill="url(%23cityGrad)" width="1400" height="300"/><polygon points="0,280 50,180 100,200 150,120 200,150 250,100 300,180 350,140 400,200 450,160 500,210 550,150 600,190 650,130 700,170 750,140 800,180 850,150 900,200 950,160 1000,190 1050,140 1100,180 1150,150 1200,210 1250,160 1300,190 1350,140 1400,180 1400,300 0,300" fill="rgba(10,15,30,0.9)"/><rect x="20" y="240" width="20" height="30" fill="rgba(255,200,100,0.4)"/><rect x="60" y="250" width="15" height="20" fill="rgba(255,200,100,0.3)"/><rect x="100" y="245" width="18" height="25" fill="rgba(255,200,100,0.35)"/></svg>') repeat-x;
-      background-size: 1400px 300px;
+      right: 17%;
+      top: 8%;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fffdf2 0%, #e8e0bf 36%, #d5d7d9 68%, rgba(255,255,255,0.12) 100%);
+      box-shadow: 0 0 45px rgba(255,255,255,0.35);
+      opacity: 0.85;
     }
 
-    .ground-layer {
+    .city {
       position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 25%;
-      background: linear-gradient(180deg, rgba(15, 20, 35, 0.6) 0%, #050607 100%);
-      border-top: 2px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .ground-texture {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 100%;
-      background: repeating-linear-gradient(
-        90deg,
-        transparent 0px,
-        transparent 40px,
-        rgba(255, 255, 255, 0.03) 40px,
-        rgba(255, 255, 255, 0.03) 80px
-      );
-    }
-
-    /* HUD */
-    .hud {
-      position: absolute;
-      top: 20px;
       left: 0;
       right: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 0 30px;
-      z-index: 100;
-      pointer-events: none;
+      bottom: 120px;
+      height: 240px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2)),
+        repeating-linear-gradient(
+          90deg,
+          rgba(13,18,30,0.88) 0 32px,
+          rgba(18,28,39,0.9) 32px 70px,
+          rgba(12,17,26,0.92) 70px 108px
+        );
+      opacity: 0.75;
     }
 
-    .player-hud {
-      flex: 0 0 35%;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .city::before {
+      content: "";
+      position: absolute;
+      inset: 20px 0 0 0;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(29,40,58,0.9) 0 30px,
+          rgba(18,25,37,0.82) 30px 58px,
+          rgba(12,18,25,0.9) 58px 84px
+        );
+      clip-path: polygon(0 100%, 0 30%, 8% 30%, 8% 10%, 14% 10%, 14% 35%, 22% 35%, 22% 8%, 28% 8%, 28% 36%, 36% 36%, 36% 14%, 43% 14%, 43% 34%, 50% 34%, 50% 12%, 58% 12%, 58% 36%, 66% 36%, 66% 9%, 73% 9%, 73% 36%, 81% 36%, 81% 15%, 90% 15%, 90% 38%, 100% 38%, 100% 100%);
     }
 
-    .player-hud.right {
-      align-items: flex-end;
-      text-align: right;
+    .ground {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 130px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.7)),
+        linear-gradient(90deg, #0a0d12 0%, #141a20 15%, #0d1116 100%);
+      border-top: 2px solid rgba(255,255,255,0.12);
     }
 
-    .player-name {
-      font-size: 18px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-    }
-
-    .ladybug-name {
-      color: #ff4460;
-      text-shadow: 0 0 15px rgba(255, 68, 96, 0.6);
-    }
-
-    .villain-name {
-      color: #6dd5ff;
-      text-shadow: 0 0 15px rgba(109, 213, 255, 0.6);
-    }
-
-    .health-bar-container {
-      width: 100%;
-      height: 20px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
-    }
-
-    .health-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #4ade80, #22c55e);
-      width: 100%;
-      transition: width 0.2s ease;
-      box-shadow: 0 0 10px rgba(74, 222, 128, 0.6);
-    }
-
-    .health-bar.villain {
-      background: linear-gradient(90deg, #60a5fa, #3b82f6);
-      box-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
-    }
-
-    .timer-display {
-      flex: 0 0 auto;
-      width: 80px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      font-weight: bold;
-      background: rgba(0, 0, 0, 0.7);
-      border: 3px solid rgba(255, 200, 0, 0.5);
-      border-radius: 10px;
-      color: #ffc800;
-      text-shadow: 0 0 10px rgba(255, 200, 0, 0.8);
-      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 200, 0, 0.3);
-    }
-
-    .info-text {
-      font-size: 12px;
-      margin-top: 4px;
+    .ground::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0 7px, rgba(255,255,255,0.015) 7px 22px);
       opacity: 0.8;
     }
 
-    /* Game Area */
-    .game-area {
+    .hud {
+      position: absolute;
+      top: 18px;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 0 30px;
+      pointer-events: none;
+    }
+
+    .player-panel {
+      width: 38%;
+      min-width: 220px;
+    }
+
+    .player-panel.right { text-align: right; }
+
+    .player-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.75);
+    }
+
+    .player-name.ladybug { color: #ff5d79; }
+    .player-name.villain { color: #73c6ff; }
+
+    .bar {
+      position: relative;
+      width: 100%;
+      height: 22px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(17,21,26,0.8);
+      border: 2px solid rgba(255,255,255,0.2);
+      box-shadow: inset 0 0 14px rgba(0,0,0,0.5);
+    }
+
+    .bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #67f0a6, #a5ffd0);
+      box-shadow: 0 0 16px rgba(103,240,166,0.45);
+      transition: width 0.18s ease;
+    }
+
+    .player-panel.right .bar-fill {
+      background: linear-gradient(90deg, #8cc5ff, #4fa2ff);
+      box-shadow: 0 0 16px rgba(79,162,255,0.45);
+    }
+
+    .timer {
+      min-width: 100px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      font-size: clamp(1.7rem, 2vw, 2.4rem);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #ffe49a;
+      background: rgba(11,15,22,0.7);
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 14px;
+      box-shadow: inset 0 0 16px rgba(255,255,255,0.06), 0 0 20px rgba(255,196,87,0.2);
+      text-shadow: 0 0 18px rgba(255,196,87,0.7);
+    }
+
+    .arena {
       position: absolute;
       inset: 0;
       z-index: 10;
     }
 
-    .fighters-container {
+    .fighter {
+      position: absolute;
+      bottom: 120px;
+      width: 190px;
+      height: 310px;
+      filter: drop-shadow(0 12px 18px rgba(0,0,0,0.38));
+      user-select: none;
+      transition: transform 0.12s ease;
+    }
+
+    .fighter.p1 { left: 11%; }
+    .fighter.p2 { right: 11%; transform: scaleX(-1); }
+
+    .fighter.hit { animation: shake 0.18s ease; }
+    .fighter.jumping { animation: jumpUp 0.42s ease; }
+    .fighter.attacking .arm-right,
+    .fighter.attacking .arm-left { animation: punch 0.26s ease; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @keyframes jumpUp {
+      0% { bottom: 120px; }
+      20% { bottom: 180px; }
+      60% { bottom: 200px; }
+      100% { bottom: 120px; }
+    }
+
+    @keyframes punch {
+      0% { transform: rotate(0deg); }
+      40% { transform: rotate(-32deg) translateX(-6px); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .fighter-body {
       position: absolute;
       inset: 0;
     }
 
-    .fighter {
+    .ladybug .head {
       position: absolute;
-      bottom: 80px;
-      width: 200px;
-      height: 300px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .fighter.p1 {
-      left: 5%;
-    }
-
-    .fighter.p2 {
-      right: 5%;
-      transform: scaleX(-1);
-    }
-
-    .fighter-sprite {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Ladybug Realistic Design */
-    .ladybug-body {
-      position: absolute;
-      width: 160px;
-      height: 220px;
-      left: 20px;
-      top: 40px;
-      background: linear-gradient(135deg, #ff1744 0%, #ff5252 50%, #ff6e40 100%);
-      border-radius: 60% 60% 50% 50% / 50% 50% 45% 45%;
-      box-shadow: inset -5px -10px 20px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(255, 23, 68, 0.4);
-    }
-
-    .ladybug-spot {
-      position: absolute;
-      background: radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.15));
-      border-radius: 50%;
-    }
-
-    .ladybug-spot-large {
-      width: 50px;
-      height: 50px;
-    }
-
-    .ladybug-spot-medium {
-      width: 35px;
-      height: 35px;
-    }
-
-    .ladybug-spot-small {
-      width: 25px;
-      height: 25px;
-    }
-
-    .spot-1 { left: 20px; top: 50px; }
-    .spot-2 { right: 20px; top: 50px; }
-    .spot-3 { left: 35px; top: 110px; }
-    .spot-4 { right: 35px; top: 110px; }
-    .spot-5 { left: 55px; top: 160px; }
-    .spot-6 { right: 55px; top: 160px; }
-
-    .ladybug-head {
-      position: absolute;
-      width: 90px;
-      height: 100px;
-      top: -30px;
-      left: 35px;
-      background: linear-gradient(135deg, #ff6b5b 0%, #ff4757 50%, #ff3838 100%);
-      border-radius: 50%;
-      box-shadow: inset -3px -8px 15px rgba(0, 0, 0, 0.25), 0 5px 15px rgba(255, 23, 68, 0.3);
-      z-index: 5;
-    }
-
-    .ladybug-ear {
-      position: absolute;
-      width: 35px;
-      height: 45px;
-      background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
-      border-radius: 50% 50% 45% 55%;
-      top: -15px;
+      left: 52px;
+      top: 10px;
+      width: 88px;
+      height: 96px;
+      border-radius: 48% 48% 50% 50% / 52% 52% 48% 48%;
+      background: linear-gradient(180deg, #ffd7d1 0%, #f9d4c2 45%, #f1b9a1 100%);
+      box-shadow: inset -6px -8px 12px rgba(0,0,0,0.08), 0 0 0 3px rgba(28,20,17,0.12);
       z-index: 4;
     }
 
-    .ladybug-ear-left {
-      left: 10px;
-      transform: rotate(-20deg);
-    }
-
-    .ladybug-ear-right {
-      right: 10px;
-      transform: rotate(20deg);
-    }
-
-    .ladybug-eye {
+    .ladybug .head::before,
+    .ladybug .head::after {
+      content: "";
       position: absolute;
-      width: 16px;
-      height: 20px;
-      background: #1a1a2e;
-      border-radius: 50%;
-      top: 35px;
-      z-index: 6;
-      box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.6);
+      top: -18px;
+      width: 20px;
+      height: 24px;
+      border-radius: 50% 50% 40% 40%;
+      background: linear-gradient(180deg, #ff6f7d, #d93d54);
+      box-shadow: inset 0 -2px 6px rgba(0,0,0,0.12);
     }
 
-    .ladybug-eye-left {
-      left: 25px;
-    }
+    .ladybug .head::before { left: 10px; transform: rotate(-18deg); }
+    .ladybug .head::after { right: 10px; transform: rotate(18deg); }
 
-    .ladybug-eye-right {
-      right: 25px;
-    }
-
-    .ladybug-eye::after {
-      content: '';
+    .ladybug .hair {
       position: absolute;
-      width: 6px;
-      height: 8px;
-      background: white;
-      border-radius: 50%;
+      left: 40px;
       top: 4px;
-      left: 4px;
-      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+      width: 110px;
+      height: 70px;
+      border-radius: 52% 48% 46% 54% / 60% 64% 36% 40%;
+      background: linear-gradient(180deg, #2c2d34 0%, #17191d 100%);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.04);
+      z-index: 5;
     }
 
-    .ladybug-mouth {
+    .ladybug .face {
+      position: absolute;
+      left: 65px;
+      top: 30px;
+      width: 58px;
+      height: 52px;
+      border-radius: 42% 42% 48% 48%;
+      background: rgba(255,255,255,0.08);
+      z-index: 6;
+    }
+
+    .ladybug .eye {
+      position: absolute;
+      top: 40px;
+      width: 12px;
+      height: 15px;
+      border-radius: 50%;
+      background: #181d2b;
+      z-index: 7;
+      box-shadow: inset -2px -2px 4px rgba(255,255,255,0.08);
+    }
+
+    .ladybug .eye.left { left: 71px; }
+    .ladybug .eye.right { left: 99px; }
+
+    .ladybug .eye::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 6px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      left: 3px;
+      top: 2px;
+    }
+
+    .ladybug .smile {
+      position: absolute;
+      left: 79px;
+      top: 57px;
+      width: 22px;
+      height: 12px;
+      border-bottom: 3px solid #2a1b1f;
+      border-radius: 0 0 18px 18px;
+      z-index: 7;
+    }
+
+    .ladybug .torso {
+      position: absolute;
+      left: 45px;
+      top: 100px;
+      width: 100px;
+      height: 110px;
+      border-radius: 26% 26% 24% 24% / 30% 30% 24% 24%;
+      background: linear-gradient(180deg, #fefefe 0%, #eaf6ff 55%, #dcebf8 100%);
+      box-shadow: inset 0 -10px 0 rgba(54,85,128,0.06), inset 0 0 0 3px rgba(28,34,43,0.12);
+      z-index: 3;
+    }
+
+    .ladybug .torso::before, .ladybug .torso::after {
+      content: "";
+      position: absolute;
+      width: 26px;
+      height: 18px;
+      top: 18px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #ff4b6e, #d22d4d);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.25);
+    }
+    .ladybug .torso::before { left: 16px; }
+    .ladybug .torso::after { right: 16px; }
+
+    .ladybug .arm {
+      position: absolute;
+      width: 20px;
+      height: 92px;
+      top: 118px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #f7cfbf, #f0ab8a 60%, #e9986e 100%);
+      box-shadow: inset -3px -6px 8px rgba(0,0,0,0.06);
+      z-index: 2;
+    }
+
+    .ladybug .arm.left { left: 20px; transform: rotate(-10deg); }
+    .ladybug .arm.right { right: 20px; transform: rotate(10deg); }
+
+    .ladybug .arm.right::after {
+      content: "";
       position: absolute;
       width: 30px;
-      height: 15px;
-      border: 2px solid #1a1a2e;
-      border-radius: 0 0 30px 30px;
-      border-top: none;
-      top: 60px;
-      left: 30px;
-      z-index: 6;
-    }
-
-    .ladybug-mask {
-      position: absolute;
-      width: 70px;
-      height: 25px;
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
-      top: 38px;
-      left: 10px;
+      height: 30px;
+      right: -8px;
+      bottom: -6px;
       border-radius: 50%;
-      z-index: 7;
-      opacity: 0.6;
+      background: linear-gradient(180deg, #ff4b6e, #d22d4d);
+      box-shadow: inset -2px -4px 8px rgba(0,0,0,0.12);
     }
 
-    .ladybug-arm {
+    .ladybug .leg {
       position: absolute;
-      width: 40px;
-      height: 100px;
-      background: linear-gradient(90deg, #ffb3ba 0%, #ffc0cb 100%);
-      border-radius: 20px;
-      top: 60px;
-      box-shadow: inset -2px -5px 10px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.2);
+      width: 24px;
+      height: 92px;
+      top: 200px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #d8e4fa, #b5c5de 52%, #8ea4c1 100%);
+      z-index: 1;
     }
 
-    .ladybug-arm-left {
-      left: -35px;
-      transform: rotate(-20deg);
-      transform-origin: top right;
-    }
+    .ladybug .leg.left { left: 62px; }
+    .ladybug .leg.right { left: 104px; }
 
-    .ladybug-arm-right {
-      right: -35px;
-      transform: rotate(20deg);
-      transform-origin: top left;
-    }
-
-    .ladybug-glove {
+    .ladybug .shoe {
       position: absolute;
-      width: 35px;
-      height: 35px;
-      background: linear-gradient(135deg, #ff1744 0%, #ff5252 100%);
-      border-radius: 50%;
-      bottom: 0;
-      left: 2px;
-      box-shadow: inset -2px -3px 8px rgba(0, 0, 0, 0.2), 0 2px 5px rgba(0, 0, 0, 0.3);
+      width: 32px;
+      height: 18px;
+      background: linear-gradient(180deg, #18212f, #0d1218 100%);
+      bottom: -12px;
+      left: -4px;
+      border-radius: 12px 14px 12px 12px;
     }
 
-    .ladybug-leg {
+    .villain .head {
       position: absolute;
-      width: 38px;
-      height: 120px;
-      background: linear-gradient(90deg, #4a5568 0%, #2d3748 100%);
-      border-radius: 20px;
-      bottom: -120px;
-      box-shadow: inset -2px -5px 12px rgba(0, 0, 0, 0.25), 0 3px 8px rgba(0, 0, 0, 0.2);
+      left: 52px;
+      top: 10px;
+      width: 88px;
+      height: 96px;
+      border-radius: 48% 48% 50% 50% / 52% 52% 48% 48%;
+      background: linear-gradient(180deg, #d2dff6 0%, #b9bfd6 48%, #7d8cb1 100%);
+      box-shadow: inset -6px -8px 12px rgba(0,0,0,0.1), 0 0 0 3px rgba(23,26,36,0.14);
+      z-index: 4;
     }
 
-    .ladybug-leg-left {
-      left: 35px;
-    }
-
-    .ladybug-leg-right {
-      right: 35px;
-    }
-
-    .ladybug-shoe {
+    .villain .head::before,
+    .villain .head::after {
+      content: "";
       position: absolute;
-      width: 40px;
-      height: 25px;
-      background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
-      border-radius: 5px 5px 20px 20px;
-      bottom: -25px;
-      left: -1px;
-      box-shadow: inset -1px -2px 5px rgba(0, 0, 0, 0.5), 0 2px 5px rgba(0, 0, 0, 0.4);
+      top: -18px;
+      width: 22px;
+      height: 38px;
+      background: linear-gradient(180deg, #6bd4ff, #2e8bf4);
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(0 0 16px rgba(107,212,255,0.5));
     }
 
-    /* Villain (Akumatized) Design */
-    .villain-body {
+    .villain .head::before { left: 8px; transform: rotate(-18deg); }
+    .villain .head::after { right: 8px; transform: rotate(18deg); }
+
+    .villain .hair {
       position: absolute;
-      width: 160px;
-      height: 220px;
-      left: 20px;
-      top: 40px;
-      background: linear-gradient(135deg, #3d3d5c 0%, #2d2d4a 50%, #1a1a2e 100%);
-      border-radius: 50% 50% 45% 50% / 52% 50% 48% 45%;
-      box-shadow: inset -5px -10px 20px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(61, 61, 92, 0.4), inset 0 0 30px rgba(109, 213, 255, 0.15);
-    }
-
-    .villain-accent {
-      position: absolute;
-      background: linear-gradient(135deg, rgba(109, 213, 255, 0.4), rgba(59, 130, 246, 0.2));
-      border-radius: 50%;
-    }
-
-    .villain-accent-1 {
-      width: 45px;
-      height: 45px;
-      left: 25px;
-      top: 60px;
-    }
-
-    .villain-accent-2 {
-      width: 45px;
-      height: 45px;
-      right: 25px;
-      top: 60px;
-    }
-
-    .villain-accent-3 {
-      width: 60px;
-      height: 50px;
-      left: 50px;
-      top: 140px;
-    }
-
-    .villain-head {
-      position: absolute;
-      width: 90px;
-      height: 100px;
-      top: -30px;
-      left: 35px;
-      background: linear-gradient(135deg, #4a5f8f 0%, #3d4d7a 50%, #2d3d5a 100%);
-      border-radius: 50%;
-      box-shadow: inset -3px -8px 15px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(109, 213, 255, 0.2);
+      left: 42px;
+      top: 4px;
+      width: 108px;
+      height: 66px;
+      border-radius: 45% 50% 48% 52% / 60% 56% 44% 40%;
+      background: linear-gradient(180deg, #2d2943, #1b1625);
       z-index: 5;
     }
 
-    .villain-eye {
+    .villain .eye {
       position: absolute;
-      width: 18px;
-      height: 22px;
-      background: radial-gradient(circle at 30% 30%, #6dd5ff, #3b82f6);
+      top: 42px;
+      width: 14px;
+      height: 17px;
       border-radius: 50%;
-      top: 33px;
-      z-index: 6;
-      box-shadow: 0 0 8px rgba(109, 213, 255, 0.8), inset -1px -2px 5px rgba(0, 0, 0, 0.4);
+      background: radial-gradient(circle at 30% 30%, #8de0ff, #51a6ff 45%, #1d4fb4 100%);
+      z-index: 7;
+      box-shadow: 0 0 12px rgba(87,181,255,0.7);
     }
 
-    .villain-eye-left {
-      left: 24px;
-    }
+    .villain .eye.left { left: 71px; }
+    .villain .eye.right { left: 100px; }
 
-    .villain-eye-right {
-      right: 24px;
-    }
-
-    .villain-pupil {
+    .villain .smile {
       position: absolute;
-      width: 8px;
-      height: 12px;
-      background: #1a1a2e;
+      left: 76px;
+      top: 60px;
+      width: 30px;
+      height: 14px;
+      border-bottom: 3px solid #1d1d2b;
+      border-radius: 0 0 24px 24px;
+      z-index: 7;
+    }
+
+    .villain .torso {
+      position: absolute;
+      left: 45px;
+      top: 100px;
+      width: 100px;
+      height: 110px;
+      border-radius: 26% 26% 26% 26% / 30% 30% 24% 24%;
+      background: linear-gradient(180deg, #4b3c6d 0%, #2a233d 55%, #1a1d29 100%);
+      box-shadow: inset 0 -10px 12px rgba(0,0,0,0.18), inset 0 0 0 3px rgba(105,116,179,0.12);
+      z-index: 3;
+    }
+
+    .villain .torso::before, .villain .torso::after {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 18px;
+      top: 16px;
       border-radius: 50%;
-      top: 6px;
-      left: 5px;
+      background: linear-gradient(180deg, #f7d54c, #d09d23);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
     }
+    .villain .torso::before { left: 16px; }
+    .villain .torso::after { right: 16px; }
 
-    .villain-horn {
+    .villain .arm {
       position: absolute;
-      width: 25px;
-      height: 50px;
-      background: linear-gradient(135deg, #6dd5ff 0%, #3b82f6 100%);
-      top: -25px;
-      z-index: 4;
-      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-      box-shadow: 0 0 10px rgba(109, 213, 255, 0.6);
+      width: 20px;
+      height: 92px;
+      top: 118px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #d5e5ff, #98afd9 55%, #6880af 100%);
+      box-shadow: inset -3px -6px 8px rgba(0,0,0,0.08);
+      z-index: 2;
     }
 
-    .villain-horn-left {
-      left: 5px;
-      transform: rotate(-20deg);
-    }
+    .villain .arm.left { left: 20px; transform: rotate(-10deg); }
+    .villain .arm.right { right: 20px; transform: rotate(10deg); }
 
-    .villain-horn-right {
-      right: 5px;
-      transform: rotate(20deg);
-    }
-
-    .villain-mouth {
+    .villain .arm.right::after {
+      content: "";
       position: absolute;
       width: 28px;
-      height: 12px;
-      border: 2px solid #1a1a2e;
-      border-radius: 0 0 25px 25px;
-      border-top: none;
-      top: 62px;
-      left: 31px;
-      z-index: 6;
-    }
-
-    .villain-arm {
-      position: absolute;
-      width: 42px;
-      height: 110px;
-      background: linear-gradient(90deg, #4a5f8f 0%, #3d4d7a 100%);
-      border-radius: 20px;
-      top: 55px;
-      box-shadow: inset -2px -5px 10px rgba(0, 0, 0, 0.3), 0 3px 8px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(109, 213, 255, 0.1);
-    }
-
-    .villain-arm-left {
-      left: -38px;
-      transform: rotate(-15deg);
-      transform-origin: top right;
-    }
-
-    .villain-arm-right {
-      right: -38px;
-      transform: rotate(15deg);
-      transform-origin: top left;
-    }
-
-    .villain-gauntlet {
-      position: absolute;
-      width: 40px;
-      height: 38px;
-      background: linear-gradient(135deg, #6dd5ff 0%, #3b82f6 100%);
-      border-radius: 50%;
-      bottom: 0;
-      left: 1px;
-      box-shadow: inset -2px -3px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(109, 213, 255, 0.5);
-    }
-
-    .villain-leg {
-      position: absolute;
-      width: 38px;
-      height: 120px;
-      background: linear-gradient(90deg, #3d3d5c 0%, #2d2d4a 100%);
-      border-radius: 20px;
-      bottom: -120px;
-      box-shadow: inset -2px -5px 12px rgba(0, 0, 0, 0.4), 0 3px 8px rgba(0, 0, 0, 0.3), inset 0 0 8px rgba(109, 213, 255, 0.08);
-    }
-
-    .villain-leg-left {
-      left: 35px;
-    }
-
-    .villain-leg-right {
-      right: 35px;
-    }
-
-    .villain-boot {
-      position: absolute;
-      width: 42px;
       height: 28px;
-      background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
-      border-radius: 5px 5px 20px 20px;
-      bottom: -28px;
-      left: -2px;
-      box-shadow: inset -1px -2px 5px rgba(0, 0, 0, 0.6), 0 0 8px rgba(109, 213, 255, 0.2);
+      right: -8px;
+      bottom: -4px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #78d1ff, #2f89ff 100%);
+      box-shadow: inset -2px -4px 8px rgba(0,0,0,0.18), 0 0 16px rgba(107,212,255,0.3);
     }
 
-    /* Animation States */
-    .fighter.attacking .ladybug-arm-right,
-    .fighter.attacking .villain-arm-right {
-      animation: punch-right 0.3s ease;
-    }
-
-    .fighter.attacking .ladybug-arm-left,
-    .fighter.attacking .villain-arm-left {
-      animation: punch-left 0.3s ease;
-    }
-
-    .fighter.hit {
-      animation: hit-shake 0.15s ease;
-    }
-
-    .fighter.blocking {
-      opacity: 0.95;
-    }
-
-    .fighter.jumping {
-      animation: jump-up 0.4s ease;
-    }
-
-    @keyframes punch-right {
-      0% { transform: rotate(20deg); }
-      50% { transform: rotate(-30deg) translateX(15px); }
-      100% { transform: rotate(20deg); }
-    }
-
-    @keyframes punch-left {
-      0% { transform: rotate(-20deg); }
-      50% { transform: rotate(30deg) translateX(-15px); }
-      100% { transform: rotate(-20deg); }
-    }
-
-    @keyframes hit-shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    @keyframes jump-up {
-      0% { bottom: 80px; }
-      50% { bottom: 180px; }
-      100% { bottom: 80px; }
-    }
-
-    /* Combat Effects */
-    .hit-effect {
+    .villain .leg {
       position: absolute;
+      width: 24px;
+      height: 92px;
+      top: 200px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #2b3040, #171e2c 52%, #0d131d 100%);
+      z-index: 1;
+    }
+    .villain .leg.left { left: 62px; }
+    .villain .leg.right { left: 104px; }
+
+    .villain .shoe {
+      position: absolute;
+      width: 32px;
+      height: 18px;
+      background: linear-gradient(180deg, #0c1220, #05070b 100%);
+      bottom: -12px;
+      left: -4px;
+      border-radius: 12px 14px 12px 12px;
+    }
+
+    .attack-flash {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      left: 50%;
+      top: 40%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
       pointer-events: none;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.1) 28%, transparent 65%);
+      filter: blur(2px);
     }
 
-    .hit-text {
+    .fighter.attacking .attack-flash {
+      animation: flash 0.3s ease;
+    }
+
+    @keyframes flash {
+      0% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.4); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+    }
+
+    .hit-label {
       position: absolute;
-      font-size: 24px;
-      font-weight: bold;
-      color: #ff1744;
-      text-shadow: 0 0 10px rgba(255, 23, 68, 0.8);
-      opacity: 1;
-      animation: float-up 0.8s ease-out forwards;
-      z-index: 50;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: #ff5d79;
+      text-shadow: 0 0 14px rgba(255,93,121,0.75);
+      animation: labelPop 0.7s ease forwards;
+      pointer-events: none;
+      z-index: 60;
     }
 
-    .hit-text.enemy {
-      color: #6dd5ff;
-      text-shadow: 0 0 10px rgba(109, 213, 255, 0.8);
+    @keyframes labelPop {
+      0% { opacity: 0; transform: translateY(0) scale(0.8); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-38px) scale(1.1); }
     }
 
-    @keyframes float-up {
-      0% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-60px);
-      }
-    }
-
-    /* UI Controls */
     .controls {
       position: absolute;
-      bottom: 20px;
       left: 50%;
+      bottom: 18px;
       transform: translateX(-50%);
-      z-index: 100;
+      z-index: 50;
       display: flex;
-      gap: 15px;
+      gap: 14px;
       flex-wrap: wrap;
       justify-content: center;
       pointer-events: auto;
     }
 
     .btn {
-      padding: 12px 24px;
-      font-size: 14px;
-      font-weight: bold;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      background: rgba(0, 0, 0, 0.5);
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(16,20,27,0.72);
       color: white;
-      border-radius: 6px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       cursor: pointer;
-      transition: all 0.2s ease;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 12px 22px rgba(0,0,0,0.25);
     }
 
-    .btn:hover {
-      border-color: rgba(255, 255, 255, 0.6);
-      background: rgba(0, 0, 0, 0.7);
-      transform: scale(1.05);
-    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { background: linear-gradient(180deg, rgba(255,93,121,0.95), rgba(185,37,70,0.95)); }
+    .btn.secondary { background: linear-gradient(180deg, rgba(115,198,255,0.9), rgba(55,95,178,0.9)); }
 
-    .btn:active {
-      transform: scale(0.95);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #ff1744 0%, #ff5252 100%);
-      border-color: #ff1744;
-    }
-
-    .btn-secondary {
-      background: linear-gradient(135deg, #6dd5ff 0%, #3b82f6 100%);
-      border-color: #6dd5ff;
-    }
-
-    .message-box {
+    .message {
       position: absolute;
-      top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 150;
-      background: rgba(0, 0, 0, 0.9);
-      border: 3px solid #ff1744;
-      padding: 30px 50px;
-      border-radius: 10px;
-      font-size: 32px;
-      font-weight: bold;
-      text-align: center;
+      top: 105px;
+      transform: translateX(-50%);
+      z-index: 60;
+      background: rgba(8,11,18,0.8);
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+      font-weight: 800;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      color: #fff;
       opacity: 0;
+      transition: opacity 0.18s ease, transform 0.18s ease;
       pointer-events: none;
-      animation: message-pop 0.5s ease forwards;
     }
 
-    @keyframes message-pop {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.5);
-      }
-      50% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1.1);
-      }
-      100% {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-      }
+    .message.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
-    .keys-info {
-      position: absolute;
-      bottom: 40px;
-      left: 20px;
-      font-size: 12px;
-      opacity: 0.6;
-      text-align: left;
-    }
-
-    .keys-info div {
-      margin: 2px 0;
-    }
-
-    @media (max-width: 768px) {
-      .fighter {
-        width: 140px;
-        height: 220px;
-      }
-
-      .ladybug-body,
-      .villain-body {
-        width: 120px;
-        height: 160px;
-        left: 10px;
-        top: 30px;
-      }
-
-      .ladybug-head,
-      .villain-head {
-        width: 70px;
-        height: 80px;
-        top: -20px;
-        left: 25px;
-      }
-
-      .btn {
-        padding: 8px 16px;
-        font-size: 12px;
-      }
-
-      .timer-display {
-        width: 60px;
-        height: 60px;
-        font-size: 24px;
-      }
+    @media (max-width: 900px) {
+      .game-shell { width: 98vw; height: 88vh; }
+      .fighter { width: 160px; height: 270px; }
+      .player-panel { min-width: 180px; }
+      .btn { padding: 10px 14px; font-size: 0.74rem; }
     }
   </style>
 </head>
 <body>
-  <div class="game-container">
-    <div class="background">
-      <div class="sky"></div>
-      <div class="city-silhouette"></div>
-      <div class="ground-layer">
-        <div class="ground-texture"></div>
-      </div>
-    </div>
+  <div class="game-shell">
+    <div class="sky"></div>
+    <div class="moon"></div>
+    <div class="city"></div>
+    <div class="ground"></div>
 
     <div class="hud">
-      <div class="player-hud">
-        <div class="player-name ladybug-name">Ladybug</div>
-        <div class="health-bar-container">
-          <div class="health-bar" id="healthBar1"></div>
-        </div>
-        <div class="info-text" id="p1Info">100 HP</div>
+      <div class="player-panel left">
+        <div class="player-name ladybug">Ladybug</div>
+        <div class="bar"><div id="p1Bar" class="bar-fill" style="width: 100%"></div></div>
       </div>
 
-      <div class="timer-display" id="timer">60</div>
+      <div class="timer" id="timer">60</div>
 
-      <div class="player-hud right">
-        <div class="player-name villain-name">Anakondra</div>
-        <div class="health-bar-container">
-          <div class="health-bar villain" id="healthBar2"></div>
-        </div>
-        <div class="info-text" id="p2Info">100 HP</div>
+      <div class="player-panel right">
+        <div class="player-name villain">Anakondra</div>
+        <div class="bar"><div id="p2Bar" class="bar-fill" style="width: 100%"></div></div>
       </div>
     </div>
 
-    <div class="game-area">
-      <div class="fighters-container">
-        <div class="fighter p1" id="fighter1">
-          <div class="fighter-sprite">
-            <div class="ladybug-body">
-              <div class="ladybug-spot spot-1 ladybug-spot-large"></div>
-              <div class="ladybug-spot spot-2 ladybug-spot-large"></div>
-              <div class="ladybug-spot spot-3 ladybug-spot-medium"></div>
-              <div class="ladybug-spot spot-4 ladybug-spot-medium"></div>
-              <div class="ladybug-spot spot-5 ladybug-spot-small"></div>
-              <div class="ladybug-spot spot-6 ladybug-spot-small"></div>
-            </div>
-            <div class="ladybug-head">
-              <div class="ladybug-ear ladybug-ear-left"></div>
-              <div class="ladybug-ear ladybug-ear-right"></div>
-              <div class="ladybug-mask"></div>
-              <div class="ladybug-eye ladybug-eye-left"></div>
-              <div class="ladybug-eye ladybug-eye-right"></div>
-              <div class="ladybug-mouth"></div>
-            </div>
-            <div class="ladybug-arm ladybug-arm-left">
-              <div class="ladybug-glove"></div>
-            </div>
-            <div class="ladybug-arm ladybug-arm-right">
-              <div class="ladybug-glove"></div>
-            </div>
-            <div class="ladybug-leg ladybug-leg-left">
-              <div class="ladybug-shoe"></div>
-            </div>
-            <div class="ladybug-leg ladybug-leg-right">
-              <div class="ladybug-shoe"></div>
-            </div>
-          </div>
+    <div class="arena">
+      <div id="fighter1" class="fighter p1 ladybug">
+        <div class="fighter-body">
+          <div class="hair"></div>
+          <div class="head"></div>
+          <div class="face"></div>
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="smile"></div>
+          <div class="torso"></div>
+          <div class="arm left"></div>
+          <div class="arm right"></div>
+          <div class="leg left"></div>
+          <div class="leg right"></div>
+          <div class="shoe left"></div>
+          <div class="shoe right"></div>
+          <div class="attack-flash"></div>
         </div>
+      </div>
 
-        <div class="fighter p2" id="fighter2">
-          <div class="fighter-sprite">
-            <div class="villain-body">
-              <div class="villain-accent villain-accent-1"></div>
-              <div class="villain-accent villain-accent-2"></div>
-              <div class="villain-accent villain-accent-3"></div>
-            </div>
-            <div class="villain-head">
-              <div class="villain-horn villain-horn-left"></div>
-              <div class="villain-horn villain-horn-right"></div>
-              <div class="villain-eye villain-eye-left">
-                <div class="villain-pupil"></div>
-              </div>
-              <div class="villain-eye villain-eye-right">
-                <div class="villain-pupil"></div>
-              </div>
-              <div class="villain-mouth"></div>
-            </div>
-            <div class="villain-arm villain-arm-left">
-              <div class="villain-gauntlet"></div>
-            </div>
-            <div class="villain-arm villain-arm-right">
-              <div class="villain-gauntlet"></div>
-            </div>
-            <div class="villain-leg villain-leg-left">
-              <div class="villain-boot"></div>
-            </div>
-            <div class="villain-leg villain-leg-right">
-              <div class="villain-boot"></div>
-            </div>
-          </div>
+      <div id="fighter2" class="fighter p2 villain">
+        <div class="fighter-body">
+          <div class="hair"></div>
+          <div class="head"></div>
+          <div class="eye left"></div>
+          <div class="eye right"></div>
+          <div class="smile"></div>
+          <div class="torso"></div>
+          <div class="arm left"></div>
+          <div class="arm right"></div>
+          <div class="leg left"></div>
+          <div class="leg right"></div>
+          <div class="shoe left"></div>
+          <div class="shoe right"></div>
+          <div class="attack-flash"></div>
         </div>
       </div>
     </div>
 
-    <div class="keys-info">
-      <div><strong>Irányítás:</strong></div>
-      <div>W - Ugrás | A/D - Mozgás</div>
-      <div>Space - Ütés | E - Speciális</div>
-      <div>Shift - Blokk | Q - Dodge</div>
-    </div>
+    <div id="message" class="message">Csata kezdődik</div>
 
     <div class="controls">
-      <button class="btn btn-primary" id="startBtn">JÁTÉK INDÍTÁSA</button>
-      <button class="btn btn-secondary" id="resetBtn">ÚJRAINDÍTÁS</button>
+      <button id="startBtn" class="btn primary">Játék</button>
+      <button id="resetBtn" class="btn secondary">Újra</button>
     </div>
   </div>
 
   <script>
-    const game = {
+    const state = {
       running: false,
       roundTime: 60,
       p1Health: 100,
       p2Health: 100,
-      p1X: 50,
-      p2X: 450,
+      p1X: 140,
+      p2X: 870,
       p1Y: 0,
       p2Y: 0,
-      p1VelY: 0,
-      p2VelY: 0,
-      gravity: 0.5,
+      p1Vy: 0,
+      p2Vy: 0,
+      gravity: 0.7,
       p1Jumping: false,
       p2Jumping: false,
-      p1Attacking: false,
-      p2Attacking: false,
       p1Blocking: false,
       p2Blocking: false,
-      gameOver: false,
-      winner: null,
-      keys: {},
-      lastAttackTime1: 0,
-      lastAttackTime2: 0,
-      attackCooldown: 300,
+      p1AttackCooldown: 0,
+      p2AttackCooldown: 0,
+      keyState: {},
+      lastTimestamp: 0,
+      timerId: null,
     };
 
-    const fighter1El = document.getElementById('fighter1');
-    const fighter2El = document.getElementById('fighter2');
-    const healthBar1 = document.getElementById('healthBar1');
-    const healthBar2 = document.getElementById('healthBar2');
-    const p1Info = document.getElementById('p1Info');
-    const p2Info = document.getElementById('p2Info');
+    const fighter1 = document.getElementById('fighter1');
+    const fighter2 = document.getElementById('fighter2');
     const timerEl = document.getElementById('timer');
+    const p1Bar = document.getElementById('p1Bar');
+    const p2Bar = document.getElementById('p2Bar');
+    const messageEl = document.getElementById('message');
     const startBtn = document.getElementById('startBtn');
     const resetBtn = document.getElementById('resetBtn');
 
-    function updatePositions() {
-      fighter1El.style.left = game.p1X + 'px';
-      fighter1El.style.bottom = game.p1Y + 'px';
-      fighter2El.style.right = game.p2X + 'px';
-      fighter2El.style.bottom = game.p2Y + 'px';
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
     }
 
-    function updateHealth() {
-      const h1 = Math.max(0, game.p1Health);
-      const h2 = Math.max(0, game.p2Health);
-      healthBar1.style.width = h1 + '%';
-      healthBar2.style.width = h2 + '%';
-      p1Info.textContent = Math.ceil(h1) + ' HP';
-      p2Info.textContent = Math.ceil(h2) + ' HP';
+    function showMessage(text, duration = 1200) {
+      messageEl.textContent = text;
+      messageEl.classList.add('show');
+      clearTimeout(showMessage.timer);
+      showMessage.timer = setTimeout(() => messageEl.classList.remove('show'), duration);
     }
 
-    function showMessage(text, duration = 1000) {
-      const box = document.createElement('div');
-      box.className = 'message-box';
-      box.textContent = text;
-      document.querySelector('.game-container').appendChild(box);
-      setTimeout(() => box.remove(), duration + 500);
+    function updateBars() {
+      p1Bar.style.width = state.p1Health + '%';
+      p2Bar.style.width = state.p2Health + '%';
     }
 
-    function damage(player, amount) {
-      if (player === 1) {
-        game.p1Health = Math.max(0, game.p1Health - amount);
+    function setFighterPositions() {
+      fighter1.style.left = state.p1X + 'px';
+      fighter1.style.bottom = state.p1Y + 'px';
+      fighter2.style.left = state.p2X + 'px';
+      fighter2.style.bottom = state.p2Y + 'px';
+    }
+
+    function addHitText(player, value) {
+      const label = document.createElement('div');
+      label.className = 'hit-label';
+      label.textContent = '-' + Math.round(value);
+      label.style.left = player === 1 ? (state.p1X + 100) + 'px' : (state.p2X + 70) + 'px';
+      label.style.top = player === 1 ? '120px' : '120px';
+      label.style.color = player === 1 ? '#ff5d79' : '#73c6ff';
+      document.querySelector('.arena').appendChild(label);
+      setTimeout(() => label.remove(), 700);
+    }
+
+    function damage(target, amount) {
+      if (target === 1) {
+        state.p1Health = clamp(state.p1Health - amount, 0, 100);
+        fighter1.classList.add('hit');
+        setTimeout(() => fighter1.classList.remove('hit'), 180);
+        addHitText(1, amount);
       } else {
-        game.p2Health = Math.max(0, game.p2Health - amount);
+        state.p2Health = clamp(state.p2Health - amount, 0, 100);
+        fighter2.classList.add('hit');
+        setTimeout(() => fighter2.classList.remove('hit'), 180);
+        addHitText(2, amount);
       }
-      updateHealth();
-
-      if (game.p1Health <= 0) {
-        endGame('Anakondra Nyert!');
-      } else if (game.p2Health <= 0) {
-        endGame('Ladybug Nyert!');
-      }
+      updateBars();
+      if (state.p1Health <= 0) endRound('Anakondra győzött!');
+      if (state.p2Health <= 0) endRound('Ladybug győzött!');
     }
 
-    function attack(attacker) {
-      const now = Date.now();
-      const isP1 = attacker === 1;
-      const lastTime = isP1 ? game.lastAttackTime1 : game.lastAttackTime2;
+    function attack(player) {
+      if (!state.running) return;
+      if (player === 1 && state.p1AttackCooldown > 0) return;
+      if (player === 2 && state.p2AttackCooldown > 0) return;
 
-      if (now - lastTime < game.attackCooldown) return;
+      const attacker = player === 1 ? fighter1 : fighter2;
+      const target = player === 1 ? fighter2 : fighter1;
+      attacker.classList.add('attacking');
+      setTimeout(() => attacker.classList.remove('attacking'), 220);
 
-      if (isP1) {
-        game.lastAttackTime1 = now;
-        game.p1Attacking = true;
-        fighter1El.classList.add('attacking');
-        setTimeout(() => {
-          game.p1Attacking = false;
-          fighter1El.classList.remove('attacking');
-        }, 300);
+      const dist = Math.abs(state.p1X - state.p2X);
+      if (player === 1 && dist < 170) {
+        const dmg = (state.p2Blocking ? 4 : 10) + Math.random() * 8;
+        damage(2, dmg);
+      }
+      if (player === 2 && dist < 170) {
+        const dmg = (state.p1Blocking ? 4 : 10) + Math.random() * 8;
+        damage(1, dmg);
+      }
 
-        const dmg = 12 + Math.random() * 8;
-        if (!game.p2Blocking) {
-          damage(2, dmg);
-          fighter2El.classList.add('hit');
-          setTimeout(() => fighter2El.classList.remove('hit'), 150);
+      if (player === 1) state.p1AttackCooldown = 360;
+      else state.p2AttackCooldown = 420;
+    }
+
+    function special(player) {
+      if (!state.running) return;
+      if (player === 1 && state.p1AttackCooldown > 0) return;
+      if (player === 2 && state.p2AttackCooldown > 0) return;
+
+      const attacker = player === 1 ? fighter1 : fighter2;
+      attacker.classList.add('attacking');
+      setTimeout(() => attacker.classList.remove('attacking'), 260);
+
+      const dist = Math.abs(state.p1X - state.p2X);
+      if (dist < 210) {
+        if (player === 1) {
+          damage(2, state.p2Blocking ? 8 : 18);
         } else {
-          damage(2, dmg * 0.3);
-        }
-      } else {
-        game.lastAttackTime2 = now;
-        game.p2Attacking = true;
-        fighter2El.classList.add('attacking');
-        setTimeout(() => {
-          game.p2Attacking = false;
-          fighter2El.classList.remove('attacking');
-        }, 300);
-
-        const dmg = 12 + Math.random() * 8;
-        if (!game.p1Blocking) {
-          damage(1, dmg);
-          fighter1El.classList.add('hit');
-          setTimeout(() => fighter1El.classList.remove('hit'), 150);
-        } else {
-          damage(1, dmg * 0.3);
+          damage(1, state.p1Blocking ? 8 : 18);
         }
       }
+
+      if (player === 1) state.p1AttackCooldown = 700;
+      else state.p2AttackCooldown = 800;
     }
 
     function jump(player) {
-      if (player === 1 && !game.p1Jumping) {
-        game.p1Jumping = true;
-        game.p1VelY = 15;
-        fighter1El.classList.add('jumping');
-      } else if (player === 2 && !game.p2Jumping) {
-        game.p2Jumping = true;
-        game.p2VelY = 15;
-        fighter2El.classList.add('jumping');
+      if (!state.running) return;
+      if (player === 1) {
+        if (state.p1Jumping) return;
+        state.p1Jumping = true;
+        state.p1Vy = 16;
+        fighter1.classList.add('jumping');
+      } else {
+        if (state.p2Jumping) return;
+        state.p2Jumping = true;
+        state.p2Vy = 16;
+        fighter2.classList.add('jumping');
       }
     }
 
-    function updatePhysics() {
-      // P1 Physics
-      game.p1VelY -= game.gravity;
-      game.p1Y += game.p1VelY;
-      if (game.p1Y <= 0) {
-        game.p1Y = 0;
-        game.p1VelY = 0;
-        game.p1Jumping = false;
-        fighter1El.classList.remove('jumping');
-      }
-
-      // P2 Physics
-      game.p2VelY -= game.gravity;
-      game.p2Y += game.p2VelY;
-      if (game.p2Y <= 0) {
-        game.p2Y = 0;
-        game.p2VelY = 0;
-        game.p2Jumping = false;
-        fighter2El.classList.remove('jumping');
-      }
-
-      updatePositions();
-    }
-
-    function aiLogic() {
-      const dist = Math.abs(game.p1X - (game.p2X - 100));
-      if (dist < 150) {
-        if (Math.random() < 0.05) attack(2);
-        if (Math.random() < 0.03) jump(2);
-      }
-      if (Math.random() < 0.02) {
-        game.p2X = Math.max(50, Math.min(450, game.p2X + (Math.random() - 0.5) * 60));
-      }
-    }
-
-    function gameLoop() {
-      if (!game.running || game.gameOver) return;
-
-      updatePhysics();
-      aiLogic();
-
-      if (Math.abs(game.p1X - (game.p2X - 100)) < 80) {
-        if (game.keys[' ']) {
-          attack(1);
-          game.keys[' '] = false;
+    function startRound() {
+      state.running = true;
+      state.roundTime = 60;
+      state.p1Health = 100;
+      state.p2Health = 100;
+      state.p1X = 140;
+      state.p2X = 870;
+      state.p1Y = 0;
+      state.p2Y = 0;
+      state.p1Vy = 0;
+      state.p2Vy = 0;
+      state.p1Jumping = false;
+      state.p2Jumping = false;
+      state.p1Blocking = false;
+      state.p2Blocking = false;
+      updateBars();
+      setFighterPositions();
+      showMessage('Csata kezdődik', 1200);
+      timerEl.textContent = '60';
+      clearInterval(state.timerId);
+      state.timerId = setInterval(() => {
+        if (!state.running) return;
+        state.roundTime -= 1;
+        timerEl.textContent = state.roundTime;
+        if (state.roundTime <= 0) {
+          if (state.p1Health > state.p2Health) endRound('Ladybug győzött!');
+          else if (state.p2Health > state.p1Health) endRound('Anakondra győzött!');
+          else endRound('Döntetlen!');
         }
-      }
-
-      if (game.keys['a'] || game.keys['A']) game.p1X = Math.max(10, game.p1X - 5);
-      if (game.keys['d'] || game.keys['D']) game.p1X = Math.min(450, game.p1X + 5);
-      if (game.keys['w'] || game.keys['W']) jump(1);
-      if (game.keys['Shift']) game.p1Blocking = true;
-      else game.p1Blocking = false;
-
-      requestAnimationFrame(gameLoop);
+      }, 1000);
     }
 
-    function startGame() {
-      game.running = true;
-      game.gameOver = false;
-      game.winner = null;
-      game.p1Health = 100;
-      game.p2Health = 100;
-      game.p1X = 50;
-      game.p2X = 450;
-      game.p1Y = 0;
-      game.p2Y = 0;
-      game.roundTime = 60;
-      updateHealth();
-      updatePositions();
-      showMessage('BITKA KEZDŐDIK!', 1200);
-      gameLoop();
-    }
-
-    function endGame(msg) {
-      game.gameOver = true;
-      game.running = false;
-      showMessage(msg, 1500);
+    function endRound(text) {
+      state.running = false;
+      clearInterval(state.timerId);
+      showMessage(text, 1800);
     }
 
     function resetGame() {
-      game.running = false;
-      game.gameOver = false;
-      game.p1Health = 100;
-      game.p2Health = 100;
-      game.p1X = 50;
-      game.p2X = 450;
-      game.p1Y = 0;
-      game.p2Y = 0;
-      game.roundTime = 60;
+      clearInterval(state.timerId);
+      state.running = false;
+      state.roundTime = 60;
       timerEl.textContent = '60';
-      updateHealth();
-      updatePositions();
-      fighter1El.classList.remove('attacking', 'hit', 'jumping');
-      fighter2El.classList.remove('attacking', 'hit', 'jumping');
+      state.p1Health = 100;
+      state.p2Health = 100;
+      state.p1X = 140;
+      state.p2X = 870;
+      state.p1Y = 0;
+      state.p2Y = 0;
+      state.p1Vy = 0;
+      state.p2Vy = 0;
+      state.p1Jumping = false;
+      state.p2Jumping = false;
+      state.p1Blocking = false;
+      state.p2Blocking = false;
+      state.p1AttackCooldown = 0;
+      state.p2AttackCooldown = 0;
+      setFighterPositions();
+      updateBars();
+      fighter1.classList.remove('jumping', 'attacking', 'hit');
+      fighter2.classList.remove('jumping', 'attacking', 'hit');
+      showMessage('Kész', 900);
     }
 
-    let timerInterval;
-    startBtn.addEventListener('click', () => {
-      resetGame();
-      clearInterval(timerInterval);
-      startGame();
-      timerInterval = setInterval(() => {
-        game.roundTime--;
-        timerEl.textContent = Math.max(0, game.roundTime);
-        if (game.roundTime <= 0) {
-          clearInterval(timerInterval);
-          if (game.p1Health > game.p2Health) {
-            endGame('Ladybug Nyert!');
-          } else if (game.p2Health > game.p1Health) {
-            endGame('Anakondra Nyert!');
-          } else {
-            endGame('Döntetlen!');
-          }
-        }
-      }, 1000);
-    });
+    function physics() {
+      if (!state.running) return;
 
-    resetBtn.addEventListener('click', () => {
-      clearInterval(timerInterval);
-      resetGame();
-      showMessage('JÁTÉK ALAPHELYZETBE ÁLLÍTVA', 800);
-    });
+      // Player 1 gravity and input
+      if (state.keyState['d']) state.p1X = clamp(state.p1X + 6, 40, 540);
+      if (state.keyState['a']) state.p1X = clamp(state.p1X - 6, 40, 540);
+      if (state.keyState['s']) state.p1Blocking = true;
+      else state.p1Blocking = false;
+      if (state.keyState['w'] && !state.p1Jumping) jump(1);
+      if (state.keyState[' ']) attack(1);
+      if (state.keyState['e']) special(1);
 
-    document.addEventListener('keydown', (e) => {
-      game.keys[e.key] = true;
-      if (e.code === 'Space' && game.running && !game.gameOver) {
-        e.preventDefault();
-        attack(1);
+      state.p1Vy -= state.gravity;
+      state.p1Y += state.p1Vy;
+      if (state.p1Y <= 0) {
+        state.p1Y = 0;
+        state.p1Vy = 0;
+        state.p1Jumping = false;
+        fighter1.classList.remove('jumping');
+      }
+
+      // Enemy AI
+      const enemyGap = Math.abs(state.p1X - state.p2X);
+      if (enemyGap > 160) {
+        const dir = state.p1X < state.p2X ? -1 : 1;
+        state.p2X += dir * 1.6;
+      } else if (enemyGap < 120) {
+        if (Math.random() < 0.025) attack(2);
+        if (Math.random() < 0.01) special(2);
+      }
+      if (Math.random() < 0.003) jump(2);
+
+      state.p2Vy -= state.gravity;
+      state.p2Y += state.p2Vy;
+      if (state.p2Y <= 0) {
+        state.p2Y = 0;
+        state.p2Vy = 0;
+        state.p2Jumping = false;
+        fighter2.classList.remove('jumping');
+      }
+
+      // cooldowns
+      if (state.p1AttackCooldown > 0) state.p1AttackCooldown -= 16;
+      if (state.p2AttackCooldown > 0) state.p2AttackCooldown -= 16;
+
+      setFighterPositions();
+      requestAnimationFrame(physics);
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const key = event.key.toLowerCase();
+      if (['a','d','w','s','e',' '].includes(key) || key === 'shift') {
+        event.preventDefault();
+      }
+      if (key === ' ') {
+        state.keyState[' '] = true;
+      } else if (key === 'shift') {
+        state.keyState['shift'] = true;
+      } else {
+        state.keyState[key] = true;
       }
     });
 
-    document.addEventListener('keyup', (e) => {
-      game.keys[e.key] = false;
+    document.addEventListener('keyup', (event) => {
+      const key = event.key.toLowerCase();
+      if (key === ' ') {
+        state.keyState[' '] = false;
+      } else if (key === 'shift') {
+        state.keyState['shift'] = false;
+      } else {
+        state.keyState[key] = false;
+      }
     });
 
+    startBtn.addEventListener('click', startRound);
+    resetBtn.addEventListener('click', resetGame);
+
     resetGame();
+    requestAnimationFrame(physics);
   </script>
 </body>
 </html>
